@@ -1,0 +1,19 @@
+version: '3'
+services:
+  data-accessor-redis-web:
+    image: toposoid/data-accessor-redis-web:0.6-SNAPSHOT-lowspec
+    environment:
+      - PRIVATE_IP_ADDRESS=data-accessor-redis-web
+      - TOPOSOID_IN_MEMORY_DB_HOST=redis
+      - TOPOSOID_IN_MEMORY_DB_PORT=6379
+      - PLAY_HTTP_PORT=9015
+    ports:
+      - "9015:9015"
+    depends_on:
+      - redis
+  redis:
+    #restart: always
+    image: redis:7.2
+    ports:
+      - "6379:6379"
+
