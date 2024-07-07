@@ -16,6 +16,7 @@
 
 package controllers
 
+import com.ideal.linked.toposoid.common.{TRANSVERSAL_STATE, TransversalState}
 import com.typesafe.scalalogging.LazyLogging
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll}
 import org.scalatestplus.play.PlaySpec
@@ -26,24 +27,15 @@ import play.api.libs.json.Json
 import play.api.test.Helpers._
 import play.api.test._
 
-class HomeControllerSpec extends PlaySpec with BeforeAndAfter with BeforeAndAfterAll with GuiceOneAppPerSuite  with Injecting with LazyLogging {
+class HomeControllerSpec extends PlaySpec with GuiceOneAppPerSuite  with Injecting{
 
-
-  before {
-  }
-
-  override def beforeAll(): Unit = {
-  }
-
-  override def afterAll(): Unit = {
-  }
-
-  val controller: HomeController = inject[HomeController]
+  val transversalState:String = Json.toJson(TransversalState(username="guest")).toString()
 
   "Two accesses of setData and getData " should {
     "returns an appropriate response" in {
+      val controller: HomeController = inject[HomeController]
       val fr = FakeRequest(POST, "/setUserData")
-        .withHeaders("Content-type" -> "application/json")
+        .withHeaders("Content-type" -> "application/json", TRANSVERSAL_STATE.str -> transversalState)
         .withJsonBody(Json.parse("""{"user":"test-user", "key":"hoge", "value":"fuga"}"""))
       val result= call(controller.setUserData(), fr)
       status(result) mustBe OK
@@ -51,7 +43,7 @@ class HomeControllerSpec extends PlaySpec with BeforeAndAfter with BeforeAndAfte
       assert(contentAsString(result) == """{"status":"Ok","message":""}""")
 
       val fr2 = FakeRequest(POST, "/getUserData")
-        .withHeaders("Content-type" -> "application/json")
+        .withHeaders("Content-type" -> "application/json", TRANSVERSAL_STATE.str -> transversalState)
         .withJsonBody(Json.parse("""{"user":"test-user", "key":"hoge", "value":""}"""))
       val result2 = call(controller.getUserData(), fr2)
       status(result2) mustBe OK
