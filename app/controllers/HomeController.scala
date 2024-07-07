@@ -16,6 +16,7 @@
 
 package controllers
 
+import com.ideal.linked.toposoid.common.{TRANSVERSAL_STATE, ToposoidUtils, TransversalState}
 import com.ideal.linked.toposoid.protocol.model.redis.UserInfo
 import com.typesafe.scalalogging.LazyLogging
 import io.lettuce.core.api.StatefulRedisConnection
@@ -31,37 +32,42 @@ import scala.concurrent.{ExecutionContext, Future}
 class HomeController @Inject()(val controllerComponents: ControllerComponents, val redisConnection: StatefulRedisConnection[String, String] /*RedisのコネクションをDI*/)(implicit ec: ExecutionContext) extends BaseController with LazyLogging {
 
   def setUserData() = Action(parse.json).async { request =>
+    val transversalState = Json.parse(request.headers.get(TRANSVERSAL_STATE .str).get).as[TransversalState]
     try {
       val json = request.body
       val userInfo:UserInfo = Json.parse(json.toString).as[UserInfo]
       val key:String = userInfo.user + "." + userInfo.key
-
+      logger.info(ToposoidUtils.formatMessageForLogger("key:" + key + " value:" + userInfo.value, transversalState.username))
       import scala.jdk.FutureConverters._
       val asyncCommands = redisConnection.async()
       for {
         _ <- asyncCommands.set(key, userInfo.value).asScala
-      } yield Ok(Json.obj("status" ->"Ok", "message" -> ""))
+      } yield {
+        logger.info(ToposoidUtils.formatMessageForLogger("Data registration to redis completed.", transversalState.username))
+        Ok(Json.obj("status" ->"Ok", "message" -> ""))
+      }
 
     } catch {
       case e: Exception => {
-        logger.error(e.toString, e)
+        logger.error(ToposoidUtils.formatMessageForLogger(e.toString, transversalState.username), e)
         Future(BadRequest(Json.obj("status" -> "Error", "message" -> e.toString())))
       }
     }
   }
 
   def getUserData() = Action(parse.json) { request =>
+    val transversalState = Json.parse(request.headers.get(TRANSVERSAL_STATE .str).get).as[TransversalState]
     try {
       val json = request.body
       val userInfo:UserInfo = Json.parse(json.toString).as[UserInfo]
       val key:String = userInfo.user + "." + userInfo.key
       val asyncCommands = redisConnection.sync()
       val value = asyncCommands.get(key)
+      logger.info(ToposoidUtils.formatMessageForLogger("Getting data from redis completed.[key:" + key + " value:" + value + "]", transversalState.username))
       Ok(Json.toJson(UserInfo(userInfo.user, userInfo.key, value))).as(JSON)
-
     } catch {
       case e: Exception => {
-        logger.error(e.toString, e)
+        logger.error(ToposoidUtils.formatMessageForLogger(e.toString, transversalState.username), e)
         BadRequest(Json.obj("status" -> "Error", "message" -> e.toString()))
       }
     }
