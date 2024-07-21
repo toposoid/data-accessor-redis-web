@@ -6,4 +6,4 @@
 # An example controller showing a sample home page
 POST     /getUserData                           controllers.HomeController.getUserData()
 POST     /setUserData                           controllers.HomeController.setUserData()
-
+POST     /removeUserData                        controllers.HomeController.removeUserData()

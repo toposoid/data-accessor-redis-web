@@ -73,5 +73,22 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents, v
     }
   }
 
+  def removeUserData() = Action(parse.json) { request =>
+    val transversalState = Json.parse(request.headers.get(TRANSVERSAL_STATE.str).get).as[TransversalState]
+    try {
+      val json = request.body
+      val userInfo: UserInfo = Json.parse(json.toString).as[UserInfo]
+      val key: String = userInfo.user + "." + userInfo.key
+      val asyncCommands = redisConnection.sync()
+      asyncCommands.del(key)
+      logger.info(ToposoidUtils.formatMessageForLogger("Removing data from redis completed.[key:" + key + "]", transversalState.username))
+      Ok(Json.obj("status" ->"Ok", "message" -> ""))
+    } catch {
+      case e: Exception => {
+        logger.error(ToposoidUtils.formatMessageForLogger(e.toString, transversalState.username), e)
+        BadRequest(Json.obj("status" -> "Error", "message" -> e.toString()))
+      }
+    }
+  }
 
 }
