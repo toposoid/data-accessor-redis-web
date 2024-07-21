@@ -31,7 +31,7 @@ class HomeControllerSpec extends PlaySpec with GuiceOneAppPerSuite  with Injecti
 
   val transversalState:String = Json.toJson(TransversalState(username="guest")).toString()
 
-  "Two accesses of setData and getData " should {
+  "Two accesses of setData and getData and removeData " should {
     "returns an appropriate response" in {
       val controller: HomeController = inject[HomeController]
       val fr = FakeRequest(POST, "/setUserData")
@@ -49,6 +49,14 @@ class HomeControllerSpec extends PlaySpec with GuiceOneAppPerSuite  with Injecti
       status(result2) mustBe OK
       contentType(result2) mustBe Some("application/json")
       assert(contentAsString(result2) == """{"user":"test-user","key":"hoge","value":"fuga"}""")
+
+      val fr3 = FakeRequest(POST, "/removeUserData")
+        .withHeaders("Content-type" -> "application/json", TRANSVERSAL_STATE.str -> transversalState)
+        .withJsonBody(Json.parse("""{"user":"test-user", "key":"hoge", "value":""}"""))
+      val result3 = call(controller.removeUserData(), fr3)
+      status(result3) mustBe OK
+      contentType(result3) mustBe Some("application/json")
+      assert(contentAsString(result3) == """{"status":"Ok","message":""}""")
 
     }
   }
