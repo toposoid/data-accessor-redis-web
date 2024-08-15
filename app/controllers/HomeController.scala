@@ -62,7 +62,10 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents, v
       val userInfo:UserInfo = Json.parse(json.toString).as[UserInfo]
       val key:String = userInfo.user + "." + userInfo.key
       val asyncCommands = redisConnection.sync()
-      val value = asyncCommands.get(key)
+      val value =  Option(asyncCommands.get(key)) match {
+        case Some(x) => x
+        case None => ""
+      }
       logger.info(ToposoidUtils.formatMessageForLogger("Getting data from redis completed.[key:" + key + " value:" + value + "]", transversalState.username))
       Ok(Json.toJson(UserInfo(userInfo.user, userInfo.key, value))).as(JSON)
     } catch {

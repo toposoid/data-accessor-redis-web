@@ -31,6 +31,20 @@ class HomeControllerSpec extends PlaySpec with GuiceOneAppPerSuite  with Injecti
 
   val transversalState:String = Json.toJson(TransversalState(username="guest")).toString()
 
+  "Access with unregistered key" should {
+    "returns an appropriate response" in {
+      val controller: HomeController = inject[HomeController]
+      val fr2 = FakeRequest(POST, "/getUserData")
+        .withHeaders("Content-type" -> "application/json", TRANSVERSAL_STATE.str -> transversalState)
+        .withJsonBody(Json.parse("""{"user":"test-user", "key":"xyz", "value":""}"""))
+      val result2 = call(controller.getUserData(), fr2)
+      status(result2) mustBe OK
+      contentType(result2) mustBe Some("application/json")
+      assert(contentAsString(result2) == """{"user":"test-user","key":"xyz","value":""}""")
+
+    }
+  }
+
   "Two accesses of setData and getData and removeData " should {
     "returns an appropriate response" in {
       val controller: HomeController = inject[HomeController]
