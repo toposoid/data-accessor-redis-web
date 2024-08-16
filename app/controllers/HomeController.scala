@@ -31,13 +31,22 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class HomeController @Inject()(val controllerComponents: ControllerComponents, val redisConnection: StatefulRedisConnection[String, String] /*RedisのコネクションをDI*/)(implicit ec: ExecutionContext) extends BaseController with LazyLogging {
 
-  def setUserData() = Action(parse.json).async { request =>
+  //def setUserData() = Action(parse.json).async { request =>
+  def setUserData() = Action(parse.json) { request =>
     val transversalState = Json.parse(request.headers.get(TRANSVERSAL_STATE .str).get).as[TransversalState]
     try {
       val json = request.body
       val userInfo:UserInfo = Json.parse(json.toString).as[UserInfo]
       val key:String = userInfo.user + "." + userInfo.key
       logger.info(ToposoidUtils.formatMessageForLogger("key:" + key + " value:" + userInfo.value, transversalState.username))
+
+      val asyncCommands = redisConnection.sync()
+      asyncCommands.set(key, userInfo.value)
+
+      logger.info(ToposoidUtils.formatMessageForLogger("Data registration to redis completed.", transversalState.username))
+      Ok(Json.obj("status" -> "Ok", "message" -> ""))
+
+      /*
       import scala.jdk.FutureConverters._
       val asyncCommands = redisConnection.async()
       for {
@@ -46,11 +55,12 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents, v
         logger.info(ToposoidUtils.formatMessageForLogger("Data registration to redis completed.", transversalState.username))
         Ok(Json.obj("status" ->"Ok", "message" -> ""))
       }
-
+      */
     } catch {
       case e: Exception => {
         logger.error(ToposoidUtils.formatMessageForLogger(e.toString, transversalState.username), e)
-        Future(BadRequest(Json.obj("status" -> "Error", "message" -> e.toString())))
+        //Future(BadRequest(Json.obj("status" -> "Error", "message" -> e.toString())))
+        BadRequest(Json.obj("status" -> "Error", "message" -> e.toString()))
       }
     }
   }
