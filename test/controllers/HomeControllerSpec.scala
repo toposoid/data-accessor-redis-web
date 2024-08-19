@@ -34,10 +34,10 @@ class HomeControllerSpec extends PlaySpec with GuiceOneAppPerSuite  with Injecti
   "Access with unregistered key" should {
     "returns an appropriate response" in {
       val controller: HomeController = inject[HomeController]
-      val fr2 = FakeRequest(POST, "/getUserData")
+      val fr2 = FakeRequest(POST, "/getData")
         .withHeaders("Content-type" -> "application/json", TRANSVERSAL_STATE.str -> transversalState)
         .withJsonBody(Json.parse("""{"identifier":"test-user", "key":"xyz", "value":""}"""))
-      val result2 = call(controller.getUserData(), fr2)
+      val result2 = call(controller.getData(), fr2)
       status(result2) mustBe OK
       contentType(result2) mustBe Some("application/json")
       assert(contentAsString(result2) == """{"identifier":"test-user","key":"xyz","value":""}""")
@@ -48,26 +48,26 @@ class HomeControllerSpec extends PlaySpec with GuiceOneAppPerSuite  with Injecti
   "Two accesses of setData and getData and removeData " should {
     "returns an appropriate response" in {
       val controller: HomeController = inject[HomeController]
-      val fr = FakeRequest(POST, "/setUserData")
+      val fr = FakeRequest(POST, "/setData")
         .withHeaders("Content-type" -> "application/json", TRANSVERSAL_STATE.str -> transversalState)
         .withJsonBody(Json.parse("""{"identifier":"test-user", "key":"hoge", "value":"fuga"}"""))
-      val result= call(controller.setUserData(), fr)
+      val result= call(controller.setData(), fr)
       status(result) mustBe OK
       contentType(result) mustBe Some("application/json")
       assert(contentAsString(result) == """{"status":"Ok","message":""}""")
 
-      val fr2 = FakeRequest(POST, "/getUserData")
+      val fr2 = FakeRequest(POST, "/getData")
         .withHeaders("Content-type" -> "application/json", TRANSVERSAL_STATE.str -> transversalState)
         .withJsonBody(Json.parse("""{"identifier":"test-user", "key":"hoge", "value":""}"""))
-      val result2 = call(controller.getUserData(), fr2)
+      val result2 = call(controller.getData(), fr2)
       status(result2) mustBe OK
       contentType(result2) mustBe Some("application/json")
       assert(contentAsString(result2) == """{"identifier":"test-user","key":"hoge","value":"fuga"}""")
 
-      val fr3 = FakeRequest(POST, "/removeUserData")
+      val fr3 = FakeRequest(POST, "/removeData")
         .withHeaders("Content-type" -> "application/json", TRANSVERSAL_STATE.str -> transversalState)
         .withJsonBody(Json.parse("""{"identifier":"test-user", "key":"hoge", "value":""}"""))
-      val result3 = call(controller.removeUserData(), fr3)
+      val result3 = call(controller.removeData(), fr3)
       status(result3) mustBe OK
       contentType(result3) mustBe Some("application/json")
       assert(contentAsString(result3) == """{"status":"Ok","message":""}""")

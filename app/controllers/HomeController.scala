@@ -32,7 +32,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class HomeController @Inject()(val controllerComponents: ControllerComponents, val redisConnection: StatefulRedisConnection[String, String] /*RedisのコネクションをDI*/)(implicit ec: ExecutionContext) extends BaseController with LazyLogging {
 
   //def setUserData() = Action(parse.json).async { request =>
-  def setUserData() = Action(parse.json) { request =>
+  def setData() = Action(parse.json) { request =>
     val transversalState = Json.parse(request.headers.get(TRANSVERSAL_STATE .str).get).as[TransversalState]
     try {
       val json = request.body
@@ -65,7 +65,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents, v
     }
   }
 
-  def getUserData() = Action(parse.json) { request =>
+  def getData() = Action(parse.json) { request =>
     val transversalState = Json.parse(request.headers.get(TRANSVERSAL_STATE .str).get).as[TransversalState]
     try {
       val json = request.body
@@ -86,7 +86,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents, v
     }
   }
 
-  def removeUserData() = Action(parse.json) { request =>
+  def removeData() = Action(parse.json) { request =>
     val transversalState = Json.parse(request.headers.get(TRANSVERSAL_STATE.str).get).as[TransversalState]
     try {
       val json = request.body
