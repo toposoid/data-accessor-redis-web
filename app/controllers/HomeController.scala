@@ -17,7 +17,7 @@
 package controllers
 
 import com.ideal.linked.toposoid.common.{TRANSVERSAL_STATE, ToposoidUtils, TransversalState}
-import com.ideal.linked.toposoid.protocol.model.redis.UserInfo
+import com.ideal.linked.toposoid.protocol.model.redis.KeyValueStoreInfo
 import com.typesafe.scalalogging.LazyLogging
 import io.lettuce.core.api.StatefulRedisConnection
 
@@ -36,12 +36,12 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents, v
     val transversalState = Json.parse(request.headers.get(TRANSVERSAL_STATE .str).get).as[TransversalState]
     try {
       val json = request.body
-      val userInfo:UserInfo = Json.parse(json.toString).as[UserInfo]
-      val key:String = userInfo.user + "." + userInfo.key
-      logger.info(ToposoidUtils.formatMessageForLogger("key:" + key + " value:" + userInfo.value, transversalState.username))
+      val keyValueStoreInfo:KeyValueStoreInfo = Json.parse(json.toString).as[KeyValueStoreInfo]
+      val key:String = keyValueStoreInfo.identifier + "." + keyValueStoreInfo.key
+      logger.info(ToposoidUtils.formatMessageForLogger("key:" + key + " value:" + keyValueStoreInfo.value, transversalState.username))
 
       val asyncCommands = redisConnection.sync()
-      asyncCommands.set(key, userInfo.value)
+      asyncCommands.set(key, keyValueStoreInfo.value)
 
       logger.info(ToposoidUtils.formatMessageForLogger("Data registration to redis completed.", transversalState.username))
       Ok(Json.obj("status" -> "Ok", "message" -> ""))
@@ -50,7 +50,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents, v
       import scala.jdk.FutureConverters._
       val asyncCommands = redisConnection.async()
       for {
-        _ <- asyncCommands.set(key, userInfo.value).asScala
+        _ <- asyncCommands.set(key, keyValueStoreInfo.value).asScala
       } yield {
         logger.info(ToposoidUtils.formatMessageForLogger("Data registration to redis completed.", transversalState.username))
         Ok(Json.obj("status" ->"Ok", "message" -> ""))
@@ -69,15 +69,15 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents, v
     val transversalState = Json.parse(request.headers.get(TRANSVERSAL_STATE .str).get).as[TransversalState]
     try {
       val json = request.body
-      val userInfo:UserInfo = Json.parse(json.toString).as[UserInfo]
-      val key:String = userInfo.user + "." + userInfo.key
+      val keyValueStoreInfo:KeyValueStoreInfo = Json.parse(json.toString).as[KeyValueStoreInfo]
+      val key:String = keyValueStoreInfo.identifier + "." + keyValueStoreInfo.key
       val asyncCommands = redisConnection.sync()
       val value =  Option(asyncCommands.get(key)) match {
         case Some(x) => x
         case None => ""
       }
       logger.info(ToposoidUtils.formatMessageForLogger("Getting data from redis completed.[key:" + key + " value:" + value + "]", transversalState.username))
-      Ok(Json.toJson(UserInfo(userInfo.user, userInfo.key, value))).as(JSON)
+      Ok(Json.toJson(KeyValueStoreInfo(keyValueStoreInfo.identifier, keyValueStoreInfo.key, value))).as(JSON)
     } catch {
       case e: Exception => {
         logger.error(ToposoidUtils.formatMessageForLogger(e.toString, transversalState.username), e)
@@ -90,8 +90,8 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents, v
     val transversalState = Json.parse(request.headers.get(TRANSVERSAL_STATE.str).get).as[TransversalState]
     try {
       val json = request.body
-      val userInfo: UserInfo = Json.parse(json.toString).as[UserInfo]
-      val key: String = userInfo.user + "." + userInfo.key
+      val keyValueStoreInfo: KeyValueStoreInfo = Json.parse(json.toString).as[KeyValueStoreInfo]
+      val key: String = keyValueStoreInfo.identifier + "." + keyValueStoreInfo.key
       val asyncCommands = redisConnection.sync()
       asyncCommands.del(key)
       logger.info(ToposoidUtils.formatMessageForLogger("Removing data from redis completed.[key:" + key + "]", transversalState.username))
