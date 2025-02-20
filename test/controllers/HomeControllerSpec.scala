@@ -29,7 +29,7 @@ import play.api.test._
 
 class HomeControllerSpec extends PlaySpec with GuiceOneAppPerSuite  with Injecting{
 
-  val transversalState:String = Json.toJson(TransversalState(username="guest")).toString()
+  val transversalState:String = Json.toJson(TransversalState(userId = "testuser", roleId = -1, username="guest", csrfToken="")).toString()
 
   "Access with unregistered key" should {
     "returns an appropriate response" in {
