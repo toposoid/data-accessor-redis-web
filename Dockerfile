@@ -15,15 +15,15 @@ RUN apt-get update \
 && sbt publishLocal \
 && rm -Rf ./target \
 && cd .. \
-&& git clone https://github.com/toposoid/toposoid-common.git \
-&& cd toposoid-common \
+&& git clone https://github.com/toposoid/toposoid-knowledgebase-model.git \
+&& cd toposoid-knowledgebase-model \
 && git fetch origin ${TARGET_BRANCH} \
 && git checkout ${TARGET_BRANCH} \
 && sbt publishLocal \
 && rm -Rf ./target \
 && cd .. \
-&& git clone https://github.com/toposoid/toposoid-knowledgebase-model.git \
-&& cd toposoid-knowledgebase-model \
+&& git clone https://github.com/toposoid/toposoid-common.git \
+&& cd toposoid-common \
 && git fetch origin ${TARGET_BRANCH} \
 && git checkout ${TARGET_BRANCH} \
 && sbt publishLocal \
