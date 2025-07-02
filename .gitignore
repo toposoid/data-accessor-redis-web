@@ -9,3 +9,4 @@ target
 /RUNNING_PID
 .DS_Store
 docker-compose-local.yml
+test/resources/*.txt

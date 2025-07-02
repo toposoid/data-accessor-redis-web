@@ -2,9 +2,8 @@ FROM toposoid/scala-base:2.13.11
 
 WORKDIR /app
 ARG TARGET_BRANCH
-ARG JAVA_OPT_XMX
 ENV DEPLOYMENT=local
-ENV _JAVA_OPTIONS="-Xms512m -Xmx"${JAVA_OPT_XMX}
+
 
 RUN apt-get update \
 && apt-get -y install git unzip \
@@ -22,15 +21,15 @@ RUN apt-get update \
 && sbt publishLocal \
 && rm -Rf ./target \
 && cd .. \
-&& git clone https://github.com/toposoid/toposoid-common.git \
-&& cd toposoid-common \
+&& git clone https://github.com/toposoid/toposoid-deduction-protocol-model.git \
+&& cd toposoid-deduction-protocol-model \
 && git fetch origin ${TARGET_BRANCH} \
 && git checkout ${TARGET_BRANCH} \
 && sbt publishLocal \
 && rm -Rf ./target \
 && cd .. \
-&& git clone https://github.com/toposoid/toposoid-deduction-protocol-model.git \
-&& cd toposoid-deduction-protocol-model \
+&& git clone https://github.com/toposoid/toposoid-common.git \
+&& cd toposoid-common \
 && git fetch origin ${TARGET_BRANCH} \
 && git checkout ${TARGET_BRANCH} \
 && sbt publishLocal \
