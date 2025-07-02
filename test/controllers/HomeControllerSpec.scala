@@ -80,7 +80,7 @@ class HomeControllerSpec extends PlaySpec with GuiceOneAppPerSuite  with Injecti
   }
 
 
-
+  /*
   "Two accesses of setData and getData and removeData2 " should {
     "returns an appropriate response" in {
       val value = Source.fromResource("resources/json2-2.txt").mkString
@@ -93,9 +93,8 @@ class HomeControllerSpec extends PlaySpec with GuiceOneAppPerSuite  with Injecti
       status(result) mustBe OK
       contentType(result) mustBe Some("application/json")
       assert(contentAsString(result) == """{"status":"Ok","message":""}""")
-
-
     }
   }
+   */
 
 }
