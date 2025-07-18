@@ -1,41 +1,11 @@
-FROM toposoid/scala-base:2.13.11
+FROM toposoid/toposoid-scala-lib-base:0.6-SNAPSHOT
 
 WORKDIR /app
 ARG TARGET_BRANCH
 ENV DEPLOYMENT=local
 
 
-RUN apt-get update \
-&& apt-get -y install git unzip \
-&& git clone https://github.com/toposoid/scala-common.git \
-&& cd scala-common \
-&& git fetch origin ${TARGET_BRANCH} \
-&& git checkout ${TARGET_BRANCH} \
-&& sbt publishLocal \
-&& rm -Rf ./target \
-&& cd .. \
-&& git clone https://github.com/toposoid/toposoid-knowledgebase-model.git \
-&& cd toposoid-knowledgebase-model \
-&& git fetch origin ${TARGET_BRANCH} \
-&& git checkout ${TARGET_BRANCH} \
-&& sbt publishLocal \
-&& rm -Rf ./target \
-&& cd .. \
-&& git clone https://github.com/toposoid/toposoid-deduction-protocol-model.git \
-&& cd toposoid-deduction-protocol-model \
-&& git fetch origin ${TARGET_BRANCH} \
-&& git checkout ${TARGET_BRANCH} \
-&& sbt publishLocal \
-&& rm -Rf ./target \
-&& cd .. \
-&& git clone https://github.com/toposoid/toposoid-common.git \
-&& cd toposoid-common \
-&& git fetch origin ${TARGET_BRANCH} \
-&& git checkout ${TARGET_BRANCH} \
-&& sbt publishLocal \
-&& rm -Rf ./target \
-&& cd .. \
-&& git clone https://github.com/toposoid/data-accessor-redis-web.git \
+RUN git clone https://github.com/toposoid/data-accessor-redis-web.git \
 && cd data-accessor-redis-web \
 && git fetch origin ${TARGET_BRANCH} \
 && git checkout ${TARGET_BRANCH} \
