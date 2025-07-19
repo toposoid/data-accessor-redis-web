@@ -19,4 +19,4 @@ fi
 
 export _JAVA_OPTIONS=$_JAVA_OPTIONS
 cd /app/data-accessor-redis-web/target/universal
-data-accessor-redis-web-0.6-SNAPSHOT/bin/data-accessor-redis-web
+data-accessor-redis-web-0.6/bin/data-accessor-redis-web
