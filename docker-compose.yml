@@ -1,11 +1,14 @@
 version: '3'
 services:
   data-accessor-redis-web:
-    image: toposoid/data-accessor-redis-web:0.6-SNAPSHOT-lowspec
+    image: toposoid/data-accessor-redis-web:0.6
     environment:
       - PRIVATE_IP_ADDRESS=data-accessor-redis-web
       - TOPOSOID_IN_MEMORY_DB_HOST=redis
       - TOPOSOID_IN_MEMORY_DB_PORT=6379
+      - TOPOSOID_JVM_XMS=512m
+      - TOPOSOID_JVM_XMX=1g
+      - TOPOSOID_JVM_XSS=512k
       - PLAY_HTTP_PORT=9015
     ports:
       - "9015:9015"
