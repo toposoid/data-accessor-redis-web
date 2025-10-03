@@ -1,4 +1,4 @@
-FROM toposoid/toposoid-scala-lib-base:0.6
+FROM toposoid/toposoid-scala-lib-base:0.7-SNAPSHOT
 
 WORKDIR /app
 ARG TARGET_BRANCH
@@ -12,7 +12,7 @@ RUN git clone https://github.com/toposoid/data-accessor-redis-web.git \
 && sbt playUpdateSecret 1> /dev/null \
 && sbt dist \
 && cd /app/data-accessor-redis-web/target/universal \
-&& unzip -o data-accessor-redis-web-0.6.zip
+&& unzip -o data-accessor-redis-web-0.7-SNAPSHOT.zip
 
 
 COPY ./docker-entrypoint.sh /app/
