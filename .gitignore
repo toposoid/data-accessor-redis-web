@@ -10,3 +10,8 @@ target
 .DS_Store
 docker-compose-local.yml
 test/resources/*.txt
+.devcontainer
+.metals
+.vscode
+project/project
+metals.sbt

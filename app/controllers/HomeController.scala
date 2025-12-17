@@ -24,7 +24,7 @@ import io.lettuce.core.api.StatefulRedisConnection
 
 import javax.inject._
 import play.api._
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, JsValue}
 import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -33,7 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class HomeController @Inject()(val controllerComponents: ControllerComponents, val redisConnection: StatefulRedisConnection[String, String] /*RedisのコネクションをDI*/)(implicit ec: ExecutionContext) extends BaseController with LazyLogging {
 
   //def setUserData() = Action(parse.json).async { request =>
-  def setData() = Action(parse.json) { request =>
+  def setData():Action[JsValue] = Action(parse.json[JsValue]){ request =>
     val transversalState = Json.parse(request.headers.get(TRANSVERSAL_STATE .str).get).as[TransversalState]
     try {
       val json = request.body
@@ -66,7 +66,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents, v
     }
   }
 
-  def getData() = Action(parse.json) { request =>
+  def getData():Action[JsValue] = Action(parse.json[JsValue]) { request =>
     val transversalState = Json.parse(request.headers.get(TRANSVERSAL_STATE .str).get).as[TransversalState]
     try {
       val json = request.body
@@ -87,7 +87,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents, v
     }
   }
 
-  def removeData() = Action(parse.json) { request =>
+  def removeData():Action[JsValue] = Action(parse.json[JsValue]) { request =>
     val transversalState = Json.parse(request.headers.get(TRANSVERSAL_STATE.str).get).as[TransversalState]
     try {
       val json = request.body
