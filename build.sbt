@@ -14,6 +14,9 @@ libraryDependencies += "com.ideal.linked" %% "toposoid-common" % "0.7-SNAPSHOT" 
 libraryDependencies += "com.ideal.linked" %% "toposoid-deduction-protocol-model" % "0.7-SNAPSHOT" exclude("org.slf4j","slf4j-api")
 libraryDependencies += "io.lettuce" % "lettuce-core" % "6.8.2.RELEASE" exclude("org.slf4j","slf4j-api")
 libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.2" % Test exclude("org.slf4j","slf4j-api")
+libraryDependencies += "org.apache.pekko" %% "pekko-slf4j" % "1.1.5" exclude("org.slf4j","slf4j-api")
+libraryDependencies += "org.apache.pekko" %% "pekko-serialization-jackson" % "1.1.5" exclude("org.slf4j","slf4j-api")
+libraryDependencies += "org.apache.pekko" %% "pekko-actor-typed" % "1.1.5" exclude("org.slf4j","slf4j-api")
 libraryDependencies += "org.slf4j" % "slf4j-api" % "1.7.36" 
 
 organizationName := "Linked Ideal LLC.[https://linked-ideal.com/]"
